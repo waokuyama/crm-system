@@ -7,6 +7,12 @@
 
 <h1>顧客一覧</h1>
 
+<a href="/customers/create">
+    新規登録
+</a>
+
+<br><br>
+
 <table border="1">
     <tr>
         <th>ID</th>
