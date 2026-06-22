@@ -18,6 +18,7 @@
         <th>ID</th>
         <th>名前</th>
         <th>会社名</th>
+        <th>操作</th>
     </tr>
 
     @foreach($customers as $customer)
@@ -25,6 +26,11 @@
         <td>{{ $customer->id }}</td>
         <td>{{ $customer->name }}</td>
         <td>{{ $customer->company }}</td>
+        <td>
+            <a href="/customers/{{ $customer->id }}/edit">
+                編集
+            </a>
+        </td>
     </tr>
     @endforeach
 
