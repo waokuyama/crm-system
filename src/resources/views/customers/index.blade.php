@@ -5,6 +5,13 @@
 </head>
 <body>
 
+<form method="POST" action="/logout">
+    @csrf
+    <button type="submit">
+        ログアウト
+    </button>
+</form>
+
 <h1>顧客一覧</h1>
 
 <a href="/customers/create">
