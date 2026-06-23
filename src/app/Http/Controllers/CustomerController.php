@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
 {
@@ -21,11 +22,17 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
-        Customer::create([
+        $customer = Customer::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'company' => $request->company,
+        ]);
+
+        Log::info('Customer Created', [
+            'user' => auth()->user()?->email,
+            'customer_id' => $customer->id,
+            'customer_name' => $customer->name,
         ]);
 
         return redirect('/customers');
@@ -49,12 +56,24 @@ class CustomerController extends Controller
             'company' => $request->company,
         ]);
 
+        Log::info('Customer Updated', [
+            'user' => auth()->user()?->email,
+            'customer_id' => $customer->id,
+            'customer_name' => $customer->name,
+        ]);
+
         return redirect('/customers');
     }
 
     public function destroy($id)
     {
         $customer = Customer::findOrFail($id);
+
+        Log::info('Customer Deleted', [
+            'user' => auth()->user()?->email,
+            'customer_id' => $customer->id,
+            'customer_name' => $customer->name,
+        ]);
 
         $customer->delete();
 
