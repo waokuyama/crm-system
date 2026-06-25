@@ -14,6 +14,31 @@
 
 <h1>顧客一覧</h1>
 
+<form method="GET" action="/customers">
+
+    <input
+        type="text"
+        name="keyword"
+        value="{{ $keyword ?? '' }}"
+        placeholder="顧客名・会社名">
+
+    <button type="submit">
+        検索
+    </button>
+
+</form>
+
+<br>
+
+@if(!empty($keyword))
+
+<p>
+    検索条件 :
+    {{ $keyword }}
+</p>
+
+@endif
+
 <a href="/customers/create">
     新規登録
 </a>
@@ -28,7 +53,8 @@
         <th>操作</th>
     </tr>
 
-    @foreach($customers as $customer)
+    @forelse($customers as $customer)
+
     <tr>
         <td>{{ $customer->id }}</td>
         <td>{{ $customer->name }}</td>
@@ -47,7 +73,7 @@
                 @csrf
                 @method('DELETE')
 
-                <button 
+                <button
                     type="submit"
                     onclick="return confirm('削除しますか？')">
                     削除
@@ -56,7 +82,16 @@
             </form>
         </td>
     </tr>
-    @endforeach
+
+    @empty
+
+    <tr>
+        <td colspan="4">
+            データがありません
+        </td>
+    </tr>
+
+    @endforelse
 
 </table>
 
