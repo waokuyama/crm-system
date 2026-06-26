@@ -30,7 +30,13 @@ class CustomerController extends Controller
             );
         }
 
-        $customers = $customers->get();
+        $customers = $customers
+            ->orderBy('id', 'desc')
+            ->paginate(5);
+
+        $customers->appends([
+            'keyword' => $keyword
+        ]);
 
         return view(
             'customers.index',

@@ -95,5 +95,9 @@
 
 </table>
 
+<br>
+
+{{ $customers->links() }}
+
 </body>
 </html>
