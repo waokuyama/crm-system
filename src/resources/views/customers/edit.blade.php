@@ -7,6 +7,16 @@
 
 <h1>顧客編集</h1>
 
+@if ($errors->any())
+    <div style="color: red; margin-bottom: 20px;">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <form action="/customers/{{ $customer->id }}" method="POST">
 
     @csrf
@@ -17,7 +27,7 @@
         <input
             type="text"
             name="name"
-            value="{{ $customer->name }}">
+            value="{{ old('name', $customer->name) }}">
     </div>
 
     <br>
@@ -25,9 +35,9 @@
     <div>
         <label>メール</label>
         <input
-            type="email"
+            type="text"
             name="email"
-            value="{{ $customer->email }}">
+            value="{{ old('email', $customer->email) }}">
     </div>
 
     <br>
@@ -37,7 +47,7 @@
         <input
             type="text"
             name="phone"
-            value="{{ $customer->phone }}">
+            value="{{ old('phone', $customer->phone) }}">
     </div>
 
     <br>
@@ -47,7 +57,7 @@
         <input
             type="text"
             name="company"
-            value="{{ $customer->company }}">
+            value="{{ old('company', $customer->company) }}">
     </div>
 
     <br>

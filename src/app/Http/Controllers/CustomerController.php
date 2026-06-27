@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 
 class CustomerController extends Controller
 {
@@ -58,7 +60,7 @@ class CustomerController extends Controller
     /**
      * 顧客登録
      */
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request)
     {
         $customer = Customer::create([
             'name'    => $request->name,
@@ -92,10 +94,8 @@ class CustomerController extends Controller
     /**
      * 更新処理
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        $customer = Customer::findOrFail($id);
-
         $customer->update([
             'name'    => $request->name,
             'email'   => $request->email,
