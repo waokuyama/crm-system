@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class CustomerApiController extends Controller
 {
@@ -15,9 +16,17 @@ class CustomerApiController extends Controller
      */
     public function index()
     {
-        $customers = Customer::orderBy('id', 'desc')->get();
+        $customers = Cache::remember(
+            'customers_api',
+            now()->addMinutes(10),
+            function () {
 
-        return response()->json($customers, 200);
+                return Customer::orderBy('id', 'desc')->get();
+
+            }
+        );
+
+        return response()->json($customers);
     }
 
     /**
