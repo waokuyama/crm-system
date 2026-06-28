@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class CustomerApiController extends Controller
 {
@@ -20,9 +20,7 @@ class CustomerApiController extends Controller
             'customers_api',
             now()->addMinutes(10),
             function () {
-
                 return Customer::orderBy('id', 'desc')->get();
-
             }
         );
 
@@ -46,14 +44,20 @@ class CustomerApiController extends Controller
             $request->validated()
         );
 
+        Cache::forget('customers_api');
+
+        Log::info(
+            'Redis cache deleted after create'
+        );
+
         Log::info('API Customer Created', [
-            'customer_id' => $customer->id,
+            'customer_id'   => $customer->id,
             'customer_name' => $customer->name,
         ]);
 
         return response()->json([
             'message' => 'Customer created successfully',
-            'data' => $customer
+            'data'    => $customer
         ], 201);
     }
 
@@ -69,14 +73,20 @@ class CustomerApiController extends Controller
             $request->validated()
         );
 
+        Cache::forget('customers_api');
+
+        Log::info(
+            'Redis cache deleted after update'
+        );
+
         Log::info('API Customer Updated', [
-            'customer_id' => $customer->id,
+            'customer_id'   => $customer->id,
             'customer_name' => $customer->name,
         ]);
 
         return response()->json([
             'message' => 'Customer updated successfully',
-            'data' => $customer
+            'data'    => $customer
         ], 200);
     }
 
@@ -85,12 +95,18 @@ class CustomerApiController extends Controller
      */
     public function destroy(Customer $customer)
     {
+        $customer->delete();
+
+        Cache::forget('customers_api');
+
+        Log::info(
+            'Redis cache deleted after delete'
+        );
+
         Log::info('API Customer Deleted', [
-            'customer_id' => $customer->id,
+            'customer_id'   => $customer->id,
             'customer_name' => $customer->name,
         ]);
-
-        $customer->delete();
 
         return response()->json([
             'message' => 'Customer deleted successfully'
