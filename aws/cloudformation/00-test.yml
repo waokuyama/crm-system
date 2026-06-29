@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: CRM System Test Stack
+
+Resources:
+
+Outputs:
+
+  ProjectName:
+    Description: Project Name
+    Value: crm-system
+
+  Environment:
+    Description: Environment
+    Value: dev
