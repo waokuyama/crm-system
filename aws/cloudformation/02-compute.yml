@@ -3,7 +3,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: CRM Compute Stack
 
 Parameters:
-
   ProjectName:
     Type: String
     Default: crm
@@ -12,54 +11,99 @@ Parameters:
     Type: String
     Default: dev
 
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Existing EC2 Key Pair
+
+  AllowedSSHLocation:
+    Type: String
+    Description: Public IP address allowed to SSH (CIDR format, e.g. xxx.xxx.xxx.xxx/32)
+
+
+  LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+
 Resources:
-
   EC2Role:
-
     Type: AWS::IAM::Role
-
     Properties:
-
       RoleName: !Sub ${ProjectName}-${Environment}-ec2-role
 
       AssumeRolePolicyDocument:
-
         Version: '2012-10-17'
-
         Statement:
-
           - Effect: Allow
-
             Principal:
-
               Service:
-
                 - ec2.amazonaws.com
-
             Action:
-
               - sts:AssumeRole
 
       ManagedPolicyArns:
-
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
-
         - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
 
   EC2InstanceProfile:
-
     Type: AWS::IAM::InstanceProfile
-
     Properties:
-
       InstanceProfileName: !Sub ${ProjectName}-${Environment}-instance-profile
-
       Roles:
-
         - !Ref EC2Role
 
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Web Security Group
+
+      VpcId:
+        Fn::ImportValue: crm-dev-VpcId
+
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref AllowedSSHLocation
+
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
+      Tags:
+        - Key: Name
+          Value: crm-dev-web-sg
+
+  WebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+
+      ImageId: !Ref LatestAmiId
+
+      KeyName: !Ref KeyPairName
+
+      IamInstanceProfile: !Ref EC2InstanceProfile
+
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+
+          GroupSet:
+            - !Ref WebSecurityGroup
+
+          SubnetId:
+            Fn::ImportValue: crm-dev-PublicSubnet1Id
+
+      Tags:
+        - Key: Name
+          Value: crm-dev-web
+
 Outputs:
-
   EC2RoleArn:
-
     Value: !GetAtt EC2Role.Arn
