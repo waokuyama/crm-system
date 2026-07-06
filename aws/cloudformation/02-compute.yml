@@ -19,7 +19,6 @@ Parameters:
     Type: String
     Description: Public IP address allowed to SSH (CIDR format, e.g. xxx.xxx.xxx.xxx/32)
 
-
   LatestAmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
@@ -106,4 +105,13 @@ Resources:
 
 Outputs:
   EC2RoleArn:
+    Description: EC2 IAM Role ARN
     Value: !GetAtt EC2Role.Arn
+
+  InstanceId:
+    Description: EC2 Instance ID
+    Value: !Ref WebServer
+
+  PublicIp:
+    Description: EC2 Public IP Address
+    Value: !GetAtt WebServer.PublicIp
