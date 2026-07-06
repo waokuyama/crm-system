@@ -89,6 +89,23 @@ Resources:
 
       IamInstanceProfile: !Ref EC2InstanceProfile
 
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+
+          dnf update -y
+
+          dnf install -y docker git wget nano
+
+          systemctl enable docker
+          systemctl start docker
+
+          usermod -aG docker ec2-user
+
+          mkdir -p /home/ec2-user/app
+
+          chown -R ec2-user:ec2-user /home/ec2-user/app
+
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
